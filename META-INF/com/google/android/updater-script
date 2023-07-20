@@ -1,0 +1,23 @@
+assert(getprop("ro.product.device") == "beryllium" || getprop("ro.build.product") == "beryllium" || abort("E3004: This package is for device: beryllium; this device is " + getprop("ro.product.device") + "."););
+assert(xiaomi.verify_trustzone("XF.5.0.1-00161") == "1" || abort("ERROR: This package requires firmware from an Android 10 based MIUI build. Please upgrade firmware and retry!"););
+ui_print("Target: Xiaomi/beryllium/beryllium:10/QKQ1.190828.002/V12.0.3.0.QEJMIXM:user/release-keys");
+ui_print("Patching system image unconditionally...");
+show_progress(0.700000, 0);
+block_image_update("/dev/block/by-name/system", package_extract_file("system.transfer.list"), "system.new.dat.br", "system.patch.dat") ||
+  abort("E1001: Failed to update system image.");
+delete_recursive("/data/system/package_cache");
+ui_print("Patching vendor image unconditionally...");
+show_progress(0.100000, 0);
+block_image_update("/dev/block/by-name/vendor", package_extract_file("vendor.transfer.list"), "vendor.new.dat.br", "vendor.patch.dat") ||
+  abort("E2001: Failed to update vendor image.");
+delete_recursive("/data/system/package_cache");
+ui_print("Patching system_ext image unconditionally...");
+show_progress(0.100000, 0);
+block_image_update("/dev/block/by-name/cust", package_extract_file("system_ext.transfer.list"), "system_ext.new.dat.br", "system_ext.patch.dat") ||
+  abort("E2001: Failed to update system_ext image.");
+delete_recursive("/data/system/package_cache");
+package_extract_file("boot.img", "/dev/block/bootdevice/by-name/boot");
+show_progress(0.100000, 10);
+ui_print("Patching vbmeta image unconditionally...");
+package_extract_file("vbmeta.img", "/dev/block/bootdevice/by-name/vbmeta");
+set_progress(1.000000);
